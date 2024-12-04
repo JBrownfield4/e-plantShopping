@@ -8,6 +8,10 @@ function ProductList() {
     const [showCart, setShowCart] = useState(false); 
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
     const [addedToCart, setAddedToCart] = useState({});
+    const [totalCountInCart, setTotalCoutInCart] = useState(0);
+
+    const dispatch = useDispatch();
+    
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -244,6 +248,10 @@ const handlePlantsClick = (e) => {
     setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
     setShowCart(false); // Hide the cart when navigating to About Us
 };
+const handleContinueShopping = (e) => {
+    e.preventDefault();
+    setShowCart(false);
+  };
 const handleAddToCart = (product) => {
   dispatch(addItem(product));
   setAddedToCart((prevState) => ({
@@ -251,10 +259,20 @@ const handleAddToCart = (product) => {
      [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
    }));
 };
-   const handleContinueShopping = (e) => {
-    e.preventDefault();
-    setShowCart(false);
-  };
+
+
+
+const handleTotalCountInCart = (action) => {
+  var newCount = totalCountInCart;
+  if(action == "+")
+      newCount = newCount + 1;
+  else if (action == "-") 
+      newCount = newCount - 1;
+  setTotalCoutInCart(newCount);
+}
+
+console.log("addedToCart:", addedToCart);
+    
     return (
         <div>
              <div className="navbar" style={styleObj}>
@@ -286,7 +304,20 @@ const handleAddToCart = (product) => {
                 <img className="product-image" src={plant.image} alt={plant.name} />
                 <div className="product-title">{plant.name}</div>
                 {/*Similarly like the above plant.name show other details like description and cost*/}
-                <button  className="product-button" onClick={() => handleAddToCart(plant)}>Add to Cart</button>
+                <div className='product-price'>{plant.cost}</div>
+                                <div className='plantname_heading'>{plant.description}</div>
+                                
+                                {!addedToCart[plant.name]? 
+                                (
+                                <button className='product-button' onClick={() => handleAddToCart(plant)}>
+                                Add to Cart
+                                </button>
+                                ):
+                                (
+                                <button className='product-button added-to-cart' disabled>
+                                    Added to Cart
+                                </button>
+                                )}
             </div>
             ))}
         </div>
@@ -295,7 +326,7 @@ const handleAddToCart = (product) => {
 
         </div>
  ) :  (
-    <CartItem onContinueShopping={handleContinueShopping}/>
+    <CartItem onContinueShopping={handleContinueShopping} onSetTotalCountInCart={handleTotalCountInCart}/>
 )}
     </div>
     );
